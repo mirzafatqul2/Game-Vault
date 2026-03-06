@@ -59,7 +59,7 @@ type Config struct {
 // @title Library Management API
 // @version 1.0
 // @description Backend API for Library System
-// @host 127.0.0.1:8000
+// @host localhost:8000
 // @BasePath /
 // @securityDefinitions.apikey BearerAuth
 // @in header

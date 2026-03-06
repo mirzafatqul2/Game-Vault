@@ -22,7 +22,7 @@ func NewRentalController(RentalService rental.RentalService) *RentalController {
 
 // @Summary Rental Checkout Game
 // @Description User checkout rental game with deposit balance deduction
-// @Tags Rental
+// @Tags Rentals
 // @Security BearerAuth
 // @Accept json
 // @Produce json

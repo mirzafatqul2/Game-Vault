@@ -74,7 +74,7 @@ func (c *WhislistController) AddWhislist(ctx echo.Context) error {
 // @Security BearerAuth
 // @Success 200 {object} response.SuccessResponse
 // @Failure 500 {object} response.ErrorResponse
-// @Router /rentals [get]
+// @Router /whistlists [get]
 func (c *WhislistController) GetAllWhislist(ctx echo.Context) error {
 	// Get user ID from JWT middleware context
 	userID, ok := ctx.Get("id").(string)

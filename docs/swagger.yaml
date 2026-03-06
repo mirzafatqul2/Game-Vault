@@ -101,7 +101,7 @@ definitions:
       message:
         type: string
     type: object
-host: 127.0.0.1:8000
+host: localhost:8000
 info:
   contact: {}
   description: Backend API for Library System
@@ -441,6 +441,27 @@ paths:
       summary: Register a new user
       tags:
       - Users
+  /whistlist:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve list of user whislist
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all user whislist
+      tags:
+      - Whislists
   /wishlists:
     post:
       consumes:
