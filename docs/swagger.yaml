@@ -1,0 +1,481 @@
+basePath: /
+definitions:
+  dto.DepositRequest:
+    properties:
+      amount:
+        type: integer
+      description:
+        type: string
+    required:
+    - amount
+    - description
+    type: object
+  dto.GameResponse:
+    properties:
+      category:
+        type: string
+      external_id:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      rental_cost:
+        type: integer
+      stock_availability:
+        type: integer
+    type: object
+  dto.ImportGameRequest:
+    properties:
+      external_id:
+        type: string
+      rental_cost:
+        type: integer
+      stock_availability:
+        type: integer
+    required:
+    - external_id
+    - rental_cost
+    - stock_availability
+    type: object
+  dto.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.RegisterRequest:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - full_name
+    - password
+    - username
+    type: object
+  dto.RentalRequest:
+    properties:
+      game_id:
+        type: string
+      rental_days:
+        type: integer
+    required:
+    - rental_days
+    type: object
+  dto.ReviewRequest:
+    properties:
+      comment:
+        type: string
+      game_id:
+        type: string
+      rating:
+        type: integer
+    required:
+    - comment
+    - rating
+    type: object
+  dto.WishlistRequest:
+    properties:
+      game_id:
+        type: string
+    type: object
+  response.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  response.SuccessResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+    type: object
+host: 127.0.0.1:8000
+info:
+  contact: {}
+  description: Backend API for Library System
+  title: Library Management API
+  version: "1.0"
+paths:
+  /games/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Game ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get detail game from database
+      tags:
+      - Games
+  /games/explore:
+    get:
+      consumes:
+      - application/json
+      description: Get list games from RAWG API
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Limit data
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Explore games
+      tags:
+      - Games
+  /games/import:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Import Game
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ImportGameRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Import game from RAWG
+      tags:
+      - Games
+  /games/ready:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve list of games that have stock availability and rental
+        cost information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.GameResponse'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all games ready for rental
+      tags:
+      - Games
+  /rentals:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve list of history rental
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all user history rental
+      tags:
+      - Rentals
+  /rentals/checkout:
+    post:
+      consumes:
+      - application/json
+      description: User checkout rental game with deposit balance deduction
+      parameters:
+      - description: Rental Checkout Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RentalRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Rental Checkout Game
+      tags:
+      - Rental
+  /reviews:
+    post:
+      consumes:
+      - application/json
+      description: User review rented game
+      parameters:
+      - description: Review Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ReviewRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create Game Review
+      tags:
+      - Review
+  /users/deposit:
+    post:
+      consumes:
+      - application/json
+      description: Add balance to user deposit_amount
+      parameters:
+      - description: Deposit Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DepositRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: User Deposit Balance
+      tags:
+      - Wallet
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return JWT token
+      parameters:
+      - description: User Login Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: User login
+      tags:
+      - Users
+  /users/me:
+    get:
+      consumes:
+      - application/json
+      description: Get user profile information based on authenticated JWT/session
+        user id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get authenticated user profile
+      tags:
+      - Users
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account with email, password, and fullname
+      parameters:
+      - description: User registration request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Register a new user
+      tags:
+      - Users
+  /wishlists:
+    post:
+      consumes:
+      - application/json
+      description: Add game to wishlist
+      parameters:
+      - description: Wishlist Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.WishlistRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Add Wishlist
+      tags:
+      - Wishlist
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
